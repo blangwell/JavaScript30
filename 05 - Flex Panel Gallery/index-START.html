@@ -26,6 +26,7 @@
     .panels {
       min-height: 100vh;
       overflow: hidden;
+      display: flex;
     }
 
     .panel {
@@ -43,6 +44,13 @@
       font-size: 20px;
       background-size: cover;
       background-position: center;
+      flex: 1; 
+      justify-content: center;
+      align-items: center;
+      /* element can be both a flex item and flex container. 
+      by doing this, we can vertically center the text in .panel */
+      display: flex;
+      flex-direction: column;
     }
 
     .panel1 { background-image:url(https://source.unsplash.com/gYl-UtwNg_I/1500x1500); }
@@ -56,7 +64,17 @@
       margin: 0;
       width: 100%;
       transition: transform 0.5s;
+      flex: 1 0 auto;
+      /* again, flex children can be flex containers themselves */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
     }
+    .panel > *:first-child { transform: translateY(-100%)}
+    .panel.open-active > *:first-child { transform: translateY(0)}
+    .panel > *:last-child { transform: translateY(100%)}
+    .panel.open-active > *:last-child { transform: translateY(0)}
 
     .panel p {
       text-transform: uppercase;
@@ -71,6 +89,8 @@
 
     .panel.open {
       font-size: 40px;
+      /* when the div has a class of open, it expands to 5 times the size */
+      flex: 5;
     }
 
   </style>
@@ -105,7 +125,25 @@
   </div>
 
   <script>
+    const panels = document.querySelectorAll('.panel');
+    
+    // this cannot be an ES6 arrow function
+    // this.classList will not be bound to the correct div
+    function toggleOpen() {
+      this.classList.toggle('open');
+    }
 
+    function toggleActive(e) {
+      // console.log(e.propertyName);
+      // using .includes to account for flex vs flex-grow browser variance
+      if (e.propertyName.includes('flex')) {
+        this.classList.toggle('open-active');
+      }
+    }
+
+    // loop over each panel and add click listener - dont invoke toggleOpen, just reference
+    panels.forEach(panel => panel.addEventListener('click', toggleOpen));
+    panels.forEach(panel => panel.addEventListener('transitionend', toggleActive));
   </script>
 
 
